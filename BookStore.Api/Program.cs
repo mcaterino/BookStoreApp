@@ -1,4 +1,5 @@
 using BookStore.Api.Data;
+using BookStore.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

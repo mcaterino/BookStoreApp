@@ -5,6 +5,10 @@ namespace BookStore.Api.Models;
 
 public partial class Author
 {
+    public Author()
+    {
+        Books = new HashSet<Book>();
+    }
     public int Id { get; set; }
 
     public string? FirstName { get; set; }
