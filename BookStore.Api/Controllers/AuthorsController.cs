@@ -27,23 +27,27 @@ namespace BookStore.Api.Controllers
 
         // GET: api/Authors
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Author>>> GetAuthors()
+        public async Task<ActionResult<IEnumerable<AuthorReadOnlyDTO>>> GetAuthors()
         {
-          if (_context.Authors is null)
-          {
-              return NotFound();
-          }
-            return Ok(await _context.Authors.ToListAsync());
+            if (_context.Authors is null)
+            {
+                return NotFound();
+            }
+
+            var authors = await _context.Authors.ToListAsync();
+            var authorDtos = _mapper.Map<IEnumerable<AuthorReadOnlyDTO>>(authors);
+            return Ok(authorDtos);
         }
 
         // GET: api/Authors/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Author>> GetAuthor(int id)
+        public async Task<ActionResult<AuthorReadOnlyDTO>> GetAuthor(int id)
         {
-          if (_context.Authors is null)
-          {
-              return NotFound();
-          }
+            if (_context.Authors is null)
+            {
+                return NotFound();
+            }
+
             var author = await _context.Authors.FindAsync(id);
 
             if (author is null)
@@ -51,19 +55,28 @@ namespace BookStore.Api.Controllers
                 return NotFound();
             }
 
-            return Ok(author);
+            var authorDto = _mapper.Map<AuthorReadOnlyDTO>(author);
+            return Ok(authorDto);
         }
 
         // PUT: api/Authors/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAuthor(int id, Author author)
+        public async Task<IActionResult> PutAuthor(int id, AuthorUpdateDTO authorDto)
         {
-            if (id != author.Id)
+            if (id != authorDto.Id)
             {
                 return BadRequest();
             }
 
+            var author = await _context.Authors.FindAsync(id);
+
+            if (author == null)
+            {
+                return NotFound();
+            }
+
+            _mapper.Map(authorDto, author);
             _context.Entry(author).State = EntityState.Modified;
 
             try
