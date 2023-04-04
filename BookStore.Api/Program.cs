@@ -1,3 +1,4 @@
+using BookStore.Api.Configuration;
 using BookStore.Api.Data;
 using BookStore.Api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connString = builder.Configuration.GetConnectionString("sqlve");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connString));
+
+builder.Services.AddAutoMapper(typeof(MapperConfig));
 
 builder.Services.AddControllers();
 
