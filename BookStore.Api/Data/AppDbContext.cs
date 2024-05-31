@@ -17,12 +17,28 @@ public partial class AppDbContext : DbContext
     }
 
     public virtual DbSet<Author> Authors { get; set; }
-
     public virtual DbSet<Book> Books { get; set; }
-   
+    public virtual DbSet<Publisher> Publisher { get; set; }
+    public virtual DbSet<AuthorBook> AuthorBooks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+        modelBuilder.Entity<AuthorBook>(entity => // No changes needed here
+        {
+            entity.HasKey(e => e.Id).HasName("PK__AuthorBo__3214EC07E0F9BDF2");
+
+            entity.HasOne(d => d.Author)
+              .WithMany(p => p.AuthorBooks)
+              .HasForeignKey(d => d.AuthorId)
+              .HasConstraintName("FK_AuthorBook_AuthorId");
+
+            entity.HasOne(d => d.Book)
+              .WithMany(p => p.AuthorBooks)
+              .HasForeignKey(d => d.BookId)
+              .HasConstraintName("FK_AuthorBook_BookId");
+        });
+
         modelBuilder.Entity<Author>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Authors__3214EC07E0F9BDF2");
@@ -46,13 +62,19 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Summary).HasMaxLength(250);
             entity.Property(e => e.Title).HasMaxLength(50);
 
-            entity.HasOne(d => d.Author).WithMany(p => p.Books)
-                .HasForeignKey(d => d.AuthorId)
-                .HasConstraintName("FK_Book_AuthorId");
+            entity.HasMany(b => b.AuthorBooks)
+                .WithOne(ab => ab.Book)
+                .HasForeignKey(ab => ab.BookId);
+        });
+
+        modelBuilder.Entity<Publisher>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Publisher__3214EC07E0F9BDF2");
+
+            entity.Property(e => e.Name).HasMaxLength(50);
         });
 
         OnModelCreatingPartial(modelBuilder);
     }
-
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
