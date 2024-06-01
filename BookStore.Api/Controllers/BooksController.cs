@@ -31,8 +31,22 @@ namespace BookStore.Api.Controllers
             }
 
             var bookDtos = await _context.Books
-                .Include(a => a.Author)
-                .ProjectTo<BookReadOnlyDTO>(_mapper.ConfigurationProvider)
+                .Include(b => b.AuthorBooks)
+                    .ThenInclude(ab => ab.Author)
+                .Select(b => new 
+                {
+                    Book = b,
+                    AuthorBook = b.AuthorBooks.FirstOrDefault()
+                })
+                .Select(x => new BookReadOnlyDTO
+                {
+                    Id = x.Book.Id,
+                    Title = x.Book.Title,
+                    Image = x.Book.Image,
+                    Price = x.Book.Price ?? 0,
+                    AuthorId = x.AuthorBook != null ? x.AuthorBook.AuthorId : null,
+                    AuthorName = x.AuthorBook != null && x.AuthorBook.Author != null ? x.AuthorBook.Author.FirstName + " " + x.AuthorBook.Author.LastName : "Unknown"
+                })
                 .ToListAsync();
             return Ok(bookDtos);
         }
@@ -41,14 +55,28 @@ namespace BookStore.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<BookDetailsDTO>> GetBook(int id)
         {
-          if (_context.Books is null)
-          {
-              return NotFound();
-          }
+            if (_context.Books is null)
+            {
+                return NotFound();
+            }
 
             var book = await _context.Books
-                .Include(a => a.Author)
-                .ProjectTo<BookDetailsDTO>(_mapper.ConfigurationProvider)
+                .Include(b => b.AuthorBooks)
+                    .ThenInclude(ab => ab.Author)
+                .Select(b => new 
+                {
+                    Book = b,
+                    AuthorBook = b.AuthorBooks.FirstOrDefault()
+                })
+                .Select(x => new BookDetailsDTO
+                {
+                    Id = x.Book.Id,
+                    Title = x.Book.Title,
+                    Image = x.Book.Image,
+                    Price = x.Book.Price ?? 0,
+                    AuthorId = x.AuthorBook != null ? x.AuthorBook.AuthorId : null,
+                    AuthorName = x.AuthorBook != null && x.AuthorBook.Author != null ? x.AuthorBook.Author.FirstName + " " + x.AuthorBook.Author.LastName : "Unknown"
+                })
                 .FirstOrDefaultAsync(b => b.Id == id);
             if (book is null)
             {
@@ -57,7 +85,7 @@ namespace BookStore.Api.Controllers
 
             return Ok(book);
         }
-
+        
         // PUT: api/Books/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
