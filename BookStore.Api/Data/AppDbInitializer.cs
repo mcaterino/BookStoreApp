@@ -319,9 +319,9 @@ namespace BookStore.Api.Data
                     context.SaveChanges();
                 }
                 //Publisher
-                if (!context.Publisher.Any())
+                if (!context.Publishers.Any())
                 {
-                    context.Publisher.AddRange(
+                    context.Publishers.AddRange(
                         new Publisher
                         {
                             Name = "Penguin Random House"
@@ -343,6 +343,7 @@ namespace BookStore.Api.Data
                             Name = "Macmillan Publishers"
                         }
                     );
+                    context.SaveChanges();
                 }
             }
         }

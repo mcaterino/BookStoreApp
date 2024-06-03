@@ -18,7 +18,7 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Author> Authors { get; set; }
     public virtual DbSet<Book> Books { get; set; }
-    public virtual DbSet<Publisher> Publisher { get; set; }
+    public virtual DbSet<Publisher> Publishers { get; set; }
     public virtual DbSet<AuthorBook> AuthorBooks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
