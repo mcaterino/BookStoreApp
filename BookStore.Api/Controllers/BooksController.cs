@@ -5,6 +5,7 @@ using BookStore.Api.Models;
 using AutoMapper;
 using BookStore.Api.DTOS.Book;
 using AutoMapper.QueryableExtensions;
+using BookStore.Api.DTOS.Author;
 
 namespace BookStore.Api.Controllers
 {
@@ -86,6 +87,23 @@ namespace BookStore.Api.Controllers
             return Ok(book);
         }
         
+        // Get: api/Books/5/Authors
+        [HttpGet("{id}/Authors")]
+        public async Task<ActionResult<IEnumerable<BookReadOnlyDTO>>> GetAuthorsOfBooks(int id)
+        {
+            var book = await _context.Books.Include(b => b.AuthorBooks)
+                .ThenInclude(ab => ab.Author)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (book is null)
+            {
+                return NotFound();
+            }
+
+            var authorDtos = _mapper.Map<IEnumerable<AuthorReadOnlyDTO>>(book.AuthorBooks.Select(ab => ab.Author));
+            return Ok(authorDtos);
+        }
+
         // PUT: api/Books/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
