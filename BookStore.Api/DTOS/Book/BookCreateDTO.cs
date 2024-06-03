@@ -12,7 +12,6 @@ namespace BookStore.Api.DTOS.Book
         public int? Year { get; set; }
 
         [Required]
-        [Range(1900, int.MaxValue)]
         public string Isbn { get; set; } = null!;
 
         [Required]
