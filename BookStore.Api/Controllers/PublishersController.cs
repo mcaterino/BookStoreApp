@@ -24,12 +24,12 @@ namespace BookStore.Api.Controllers
         [HttpGet]
         public IActionResult GetPublishers()
         {
-            if (_context?.Publisher is null)
+            if (_context?.Publishers is null)
             {
                 return NotFound();
             }
 
-            var publishers = _context.Publisher;
+            var publishers = _context.Publishers;
             var publisherDtos = _mapper?.Map<IEnumerable<PublisherReadOnlyDTO>>(publishers);
             return Ok(publisherDtos);
         }
@@ -38,12 +38,12 @@ namespace BookStore.Api.Controllers
         [HttpGet("{id}")]
         public IActionResult GetPublisher(int id)
         {
-            if (_context?.Publisher is null)
+            if (_context?.Publishers is null)
             {
                 return NotFound();
             }
 
-            var publisher = _context.Publisher.Find(id);
+            var publisher = _context.Publishers.Find(id);
 
             if (publisher is null)
             {
@@ -59,7 +59,7 @@ namespace BookStore.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<PublisherCreateDTO>> PostPublisher(PublisherCreateDTO publisherDto)
         {
-            if (_context?.Publisher is null)
+            if (_context?.Publishers is null)
             {
                 return Problem("Entity set 'AppDbContext.Publisher'  is null.");
             }
@@ -70,7 +70,7 @@ namespace BookStore.Api.Controllers
                 return BadRequest("Unable to map the provided publisherDto to a Publisher entity.");
             }
 
-            _context.Publisher.Add(publisher);
+            _context.Publishers.Add(publisher);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPublisher", new { id = publisher.Id }, publisher);
@@ -86,7 +86,7 @@ namespace BookStore.Api.Controllers
                 return BadRequest();
             }
 
-            var publisher = await _context.Publisher.FindAsync(id);
+            var publisher = await _context.Publishers.FindAsync(id);
 
             if (publisher == null)
             {
@@ -119,13 +119,13 @@ namespace BookStore.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePublisher(int id)
         {
-            var publisher = await _context.Publisher.FindAsync(id);
+            var publisher = await _context.Publishers.FindAsync(id);
             if (publisher == null)
             {
                 return NotFound();
             }
 
-            _context.Publisher.Remove(publisher);
+            _context.Publishers.Remove(publisher);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -133,7 +133,7 @@ namespace BookStore.Api.Controllers
 
         private bool PublisherExists(int id)
         {
-            return (_context.Publisher?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Publishers?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
