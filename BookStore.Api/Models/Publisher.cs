@@ -11,8 +11,5 @@
 
         // Navigation Properties 
         public virtual ICollection<Book>? Books { get; } = new List<Book>();
-        public int? BookId { get; set; }
-
-        public virtual Book? Book { get; set; }
     }
 }
